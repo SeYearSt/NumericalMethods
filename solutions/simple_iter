@@ -1,0 +1,46 @@
+import numpy as np
+
+def simple_iter(A: list, f: list, epsilon: float, rand: bool = True):
+    iterations = 0
+    
+    if rand:
+     x = np.reshape(np.random.rand(f.size, 1), (f.size, 1))
+    else:
+      x = np.zeros((f.size, 1))
+    
+    convergence = False
+    
+    while not convergence:
+        x_new = x - np.matmul(A,x) + f
+        
+        if np.linalg.norm(x_new - x) <= epsilon:
+            convergence = True
+    
+        x = x_new
+        iterations += 1
+    
+    return x, iterations, A@x - f
+    
+if __name__ == '__main__':
+    
+    A = np.array([[0.405, 0.05, 0.04, 0, 0.09],[-0.061, 0.53, 0.073, 0.11, -0.06],[0.07, -0.036, 0.38, 0.03, 0.02],[-0.05, 0, 0.066, 0.58, 0.23],[0, 0.081, -0.05, 0, 0.41]])
+    f = np.reshape(np.array([1.77, -0.53, -0.626, -2.772, 1.001]), (A.shape[1], 1))
+    
+    print('A=',A)
+    print('f=', f)
+
+    #epsilons = [0.01, 0.001, 0.0001]
+    
+    #for epsilon in epsilons:
+        #print('Solution={}, Iterations={}'.format(*simple_iter(A, f, epsilon)))
+    epsilon = float(input('Input epsilon: '))
+    #precision = int(input('Input precision: '))
+
+    print('Pecision is:', epsilon)
+
+    X, iteractions, difference = simple_iter(A, f, epsilon)
+
+    for idx, x in enumerate(X):
+      print('X{}= '.format(idx+1))
+      #print('X{}={0:.10f}'.format(idx+1, x[0]))  
+        
