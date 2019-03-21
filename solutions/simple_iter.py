@@ -41,6 +41,5 @@ if __name__ == '__main__':
     X, iteractions, difference = simple_iter(A, f, epsilon)
 
     for idx, x in enumerate(X):
-      print('X{}= '.format(idx+1))
-      #print('X{}={0:.10f}'.format(idx+1, x[0]))  
-        
+      print('X{}='.format(idx+1), end='')
+      print('{0:.10f}'.format(*x))
