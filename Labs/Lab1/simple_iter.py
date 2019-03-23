@@ -28,18 +28,15 @@ if __name__ == '__main__':
     
     print('A=',A)
     print('f=', f)
-
-    #epsilons = [0.01, 0.001, 0.0001]
     
-    #for epsilon in epsilons:
-        #print('Solution={}, Iterations={}'.format(*simple_iter(A, f, epsilon)))
     epsilon = float(input('Input epsilon: '))
-    #precision = int(input('Input precision: '))
 
     print('Pecision is:', epsilon)
 
-    X, iteractions, difference = simple_iter(A, f, epsilon)
+    X, iterations, difference = simple_iter(A, f, epsilon)
 
     for idx, x in enumerate(X):
       print('X{}='.format(idx+1), end='')
       print('{0:.10f}'.format(*x))
+
+    print('Iterations=', iterations)
