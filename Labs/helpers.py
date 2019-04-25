@@ -25,7 +25,7 @@ def run(method):
     
     print('Difference:')
     for idx, x in enumerate(difference):
-      print('A[{0}][:]*X-F{0}= '.format(idx+1), end='')
+      print('R[X{}]= '.format(idx+1), end='')
       print('{0:.10f}'.format(*x))
 
 
