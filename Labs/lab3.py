@@ -34,6 +34,7 @@ def simple_iter(x: float, eps: float) -> tuple:
 
 	while True:
 		x_new = fi(x)
+		print("fi(x_{})=".format(iteration_count), x_new)
 		variance = x_new - x
 		x = x_new
 		iteration_count += 1
