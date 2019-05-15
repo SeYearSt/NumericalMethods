@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import texttable as tt
 
 X = np.arange(0, 1, 0.1)
 Y = np.array([0., 0.22140, 0.49182, 0.82211, 1.22554, 1.71828, 2.32011, 3.05519, 3.95303, 5.04964])
@@ -30,6 +31,33 @@ def L(x: float) -> float:
     return result
 
 
+def print_divided_diff_table(x: np.ndarray, y: np.ndarray) -> None:
+    tab = tt.Texttable()
+
+    # ----------- set headers
+    headings = ['X', 'Y']
+    for i in range(1, Y.shape[0]):
+        head = 'f_x_i...f_x_i+{}'.format(i)
+        headings.append(head)
+
+    tab.header(headings)
+
+    values = [x, y]
+
+    # --------- cal divided differences
+
+    for i in range(1, Y.shape[0]):
+        divided_diff_s = np.array([divided_diff(x[j: j+i+1], y[j: j+i+1]) for j in range(y.shape[0] - i)])
+        divided_diff_s = np.hstack([divided_diff_s, np.zeros(Y.shape[0]-1-divided_diff_s.shape[0])])
+        values.append(divided_diff_s)
+
+    for row in zip(*values):
+        tab.add_row(row)
+
+    s = tab.draw()
+    print(s)
+
+
 if __name__ == '__main__':
 
     for idx, node in enumerate(X):
@@ -41,6 +69,8 @@ if __name__ == '__main__':
 
     for x in X_test:
         print("Value of interpolation polynomal in {}: is {}".format(x, L(x)))
+
+    print_divided_diff_table(X, Y)
 
     debug = False
 
