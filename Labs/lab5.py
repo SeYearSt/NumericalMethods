@@ -3,14 +3,8 @@ import numpy as np
 
 X = np.arange(0, 1, 0.1)
 Y = np.array([0., 0.22140, 0.49182, 0.82211, 1.22554, 1.71828, 2.32011, 3.05519, 3.95303, 5.04964])
-# print(X.shape)
-# print(Y.shape)
 
-
-# X = [0., 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-# Y = [0., 0.22140, 0.49182, 0.82211, 1.22554, 1.71828, 2.32011, 3.05519, 3.95303, 5.04964]
-#
-# X_test = [0.405, 0.661, 0.822]
+X_test = np.array([0.405, 0.661, 0.822])
 
 
 def divided_diff(x: np.ndarray, y: np.ndarray) -> float:
@@ -26,9 +20,35 @@ def divided_diff(x: np.ndarray, y: np.ndarray) -> float:
     return result
 
 
+def L(x: float) -> float:
+    result = Y[0]
+    for i in range(1, Y.shape[0]):
+        indexes = np.arange(i)
+        indexes_diff = np.append(indexes, indexes[-1]+1)
+        result += np.prod(x - X[indexes])*divided_diff(X[indexes_diff], Y[indexes_diff])
+
+    return result
+
 
 if __name__ == '__main__':
-    print(divided_diff(np.array([0., 4.]), np.array([0., 16.])))
-    # divided_diff(X, Y)
-    # plt.plot(X, Y, '*')
-    # plt.show()
+
+    for idx, node in enumerate(X):
+        print("Value in table: {}, value of interpolation polygon: {}".format(Y[idx], L(node)))
+        if idx >= 3:
+            break
+
+    print()
+
+    for x in X_test:
+        print("Value of interpolation polynomal in {}: is {}".format(x, L(x)))
+
+    debug = False
+
+    if debug:
+        fig = plt.figure()
+        plt.plot(X, Y, "ob", markersize=5)
+        X_interp = np.linspace(X[0], X[-1], 100)
+        plt.plot(X_interp, [L(x) for x in X_interp], 'oy', markersize=2)
+        plt.legend(["Fact", "Interpolation"])
+        plt.show()
+
