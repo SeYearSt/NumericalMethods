@@ -72,13 +72,13 @@ if __name__ == '__main__':
 
     print_divided_diff_table(X, Y)
 
-    debug = False
+    debug = True
 
     if debug:
         fig = plt.figure()
         plt.plot(X, Y, "ob", markersize=5)
         X_interp = np.linspace(X[0], X[-1], 100)
         plt.plot(X_interp, [L(x) for x in X_interp], 'oy', markersize=2)
-        plt.legend(["Fact", "Interpolation"])
+        plt.legend(["Table point", "Interpolation"])
         plt.show()
 
