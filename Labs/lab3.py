@@ -56,16 +56,22 @@ def plot_f(f: 'function', a:float, b:float, n: int) -> float:
 	plt.show()
 
 
+def input_init_values() -> tuple:
+	a, b = (float(x) for x in input("Input begin and end of interval: ").split())
+	print("Your input is a={}, b={}".format(a, b))
+	eps = float(input("Input epsilon: "))
+	print("Your input is eps={}".format(eps))
+
+	return a, b, eps
+
+
 if __name__ == '__main__':
 	debug = True
 
 	# debug variables
 	# a, b, eps, eps2 = -1, 0.5, 1e-3, 1e-5
 
-	a, b = (float(x) for x in input("Input begin and end of interval: ").split())
-	print("Your input is a={}, b={}".format(a, b))
-	eps = float(input("Input epsilon: "))
-	print("Your input is eps={}".format(eps))
+	a, b, eps = input_init_values()
 
 	if debug:
 		plot_f(f, a, b, 100)
@@ -75,7 +81,7 @@ if __name__ == '__main__':
 	print("Binary search result: ", x0)
 
 	eps2 = float(input('Input epsilon for simple iteration: '))
-	iteration_simple_iter, x1, variance= simple_iter(x0, eps2)
+	iteration_simple_iter, x1, variance = simple_iter(x0, eps2)
 	print("Simple iteration iteration count:", iteration_simple_iter)
 	print("Variance:", variance)
 	print('Simple iteration result =', x1)
