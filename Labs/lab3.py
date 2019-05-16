@@ -66,7 +66,7 @@ def input_init_values() -> tuple:
 
 
 if __name__ == '__main__':
-	debug = True
+	debug = False
 
 	# debug variables
 	# a, b, eps, eps2 = -1, 0.5, 1e-3, 1e-5

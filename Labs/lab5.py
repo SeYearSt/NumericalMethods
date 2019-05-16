@@ -5,7 +5,7 @@ import texttable as tt
 X = np.arange(0, 1, 0.1)
 Y = np.array([0., 0.22140, 0.49182, 0.82211, 1.22554, 1.71828, 2.32011, 3.05519, 3.95303, 5.04964])
 
-X_test = np.array([0.405, 0.661, 0.822])
+X_test = np.array([0.221, 0.428, 0.681, 0.3])
 
 
 def divided_diff(x: np.ndarray, y: np.ndarray) -> float:

@@ -1,6 +1,7 @@
 import numpy as np
 
 from Labs.lab3 import binary_search
+from Labs.lab3 import simple_iter
 from Labs.lab3 import input_init_values
 from Labs.lab3 import plot_f
 from Labs.lab3 import f
@@ -25,7 +26,7 @@ def newton(f: 'function', f_d: 'function', x: float, eps: float) -> tuple:
 
 
 if __name__ == '__main__':
-    debug = True
+    debug = False
 
     # debug variables
     # a, b, eps, eps2 = -1, 0.5, 1e-3, 1e-5
@@ -38,9 +39,18 @@ if __name__ == '__main__':
     iteration_binary, x0 = binary_search(f, a, b, eps)
     print("Binary search iteration count:", iteration_binary)
     print("Binary search result: ", x0)
+    print()
 
-    eps2 = float(input('Input epsilon for simple iteration: '))
+    eps2 = float(input('Input epsilon for newton and simple iteration: '))
+
+    iteration_simple_iter, x1, variance = simple_iter(x0, eps2)
+    print("Simple iteration iteration count:", iteration_simple_iter)
+    print("Variance:", variance)
+    print('Simple iteration result =', x1)
+    print()
+
     iterations_newton, x1, variance = newton(f, f_d, x0, eps2)
     print("Newton's  number of iterations:", iterations_newton)
     print("Variance:", variance)
     print('Newton result =', x1)
+    print()
