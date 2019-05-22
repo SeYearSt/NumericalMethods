@@ -61,14 +61,14 @@ if __name__ == '__main__':
     X_test = np.array([0.221, 0.428, 0.681, 0.3])
 
     for idx, node in enumerate(X):
-        print("Value in table: {}, value of interpolation polygon: {}".format(Y[idx], L(node)))
+        print("Value in table: {}, value of interpolation polygon: {}".format(Y[idx], L(node, X, Y)))
         if idx >= 3:
             break
 
     print()
 
     for x in X_test:
-        print("Value of interpolation polynomal in {}: is {}".format(x, L(x)))
+        print("Value of interpolation polynomal in {}: is {}".format(x, L(x, X, Y)))
 
     print_divided_diff_table(X, Y)
 
