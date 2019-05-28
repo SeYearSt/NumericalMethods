@@ -43,7 +43,7 @@ def print_divided_diff_table(x: np.ndarray, y: np.ndarray) -> None:
 
     for i in range(1, y.shape[0]):
         divided_diff_s = np.array([divided_diff(x[j: j+i+1], y[j: j+i+1]) for j in range(y.shape[0] - i)])
-        divided_diff_s = np.hstack([divided_diff_s, np.zeros(y.shape[0]-1-divided_diff_s.shape[0])])
+        divided_diff_s = np.hstack([divided_diff_s, [""]*(y.shape[0]-1-divided_diff_s.shape[0])])
         values.append(divided_diff_s)
 
     for row in zip(*values):
@@ -53,6 +53,20 @@ def print_divided_diff_table(x: np.ndarray, y: np.ndarray) -> None:
     print(s)
 
 
+def print_polynomial(X, Y) -> None:
+    template = '(x-{:.2f})'
+    polinomial = 'Ln(x) = {:.2f}+'
+    args = [L(X[0], X, Y)]
+    for i in range(1, X.shape[0]):
+        polinomial += template*i + '{:.2f}+'
+        args.extend(X[:i].tolist())
+        args.append(divided_diff(X[:i+1], Y[:i+1]))
+
+    polinomial = polinomial[:-1]
+
+    print(polinomial.format(*args))
+
+
 if __name__ == '__main__':
 
     X = np.arange(0, 1, 0.1)
@@ -60,25 +74,17 @@ if __name__ == '__main__':
 
     X_test = np.array([0.221, 0.428, 0.681, 0.3])
 
-    for idx, node in enumerate(X):
-        print("Value in table: {}, value of interpolation polygon: {}".format(Y[idx], L(node, X, Y)))
-        if idx >= 3:
-            break
-
-    print()
-
-    for x in X_test:
-        print("Value of interpolation polynomal in {}: is {}".format(x, L(x, X, Y)))
-
+    print("Netwon's polynomial")
+    print_polynomial(X, Y)
+    print("Table of divided differences")
     print_divided_diff_table(X, Y)
 
-    debug = True
+    debug = False
 
     if debug:
         fig = plt.figure()
-        plt.plot(X, Y, "ob", markersize=5)
+        plt.plot(X, Y, "ob ", markersize=5)
         X_interp = np.linspace(X[0], X[-1], 100)
         plt.plot(X_interp, [L(x, X, Y) for x in X_interp], 'oy', markersize=2)
         plt.legend(["Table point", "Interpolation"])
         plt.show()
-
