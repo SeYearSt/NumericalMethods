@@ -3,15 +3,16 @@ import numpy as np
 import texttable as tt
 
 
-def divided_diff(x: np.ndarray, y: np.ndarray) -> float:
-    if y.shape != y.shape:
-        raise ValueError("Y and X should have the same shape, got X.shape = {}, Y.shape = {}".format(x.shape, y.shape))
+def divided_diff(x: list, y: list) -> list:
+    n = len(y)
 
-    result = 0
-    for j in range(y.shape[0]):
-        indexes = np.arange(y.shape[0]) != j
-        denominator = np.prod(x[j] - x[indexes])
-        result += y[j]/denominator
+    result = [[] for i in range(n)]
+    result[0] = y
+
+    for k in range(n-1):
+        for i in range(1, len(result[k])):
+            divided_diff = (result[k][i]-result[k][i-1])/(x[i+k] - x[i-1])
+            result[k+1].append(divided_diff)
 
     return result
 
@@ -55,7 +56,7 @@ def print_divided_diff_table(x: np.ndarray, y: np.ndarray) -> None:
 
 def f(x: float) -> float:
     return np.cosh(x/2)/10
-	
+
 
 def print_polynomial(X, Y) -> None:
     template = '(x-{:.3f})'
@@ -87,26 +88,31 @@ def print_difference(X_test, X, Y) -> None:
 
 if __name__ == '__main__':
 
-    a, b = 0, 3
-    n = 5
-    X = np.linspace(a, b, n)
-    Y = f(X)
+    # a, b = 0, 3
+    # n = 5
+    # X = np.linspace(a, b, n)
+    # Y = f(X)
 
-    X_test = np.array([1.2, 2., 2.8, 0.5, 0.75, 3.4, 10])
+    X = [1, 2, 3]
+    Y = [2, 4, 10]
 
-    print("Netwon's polynomial")
-    print_polynomial(X, Y)
-    print("Table of divided differences")
-    print_divided_diff_table(X, Y)
-    print('Difference between function and interpolation polynomial')
-    print_difference(X_test, X, Y)
+    print(divided_diff(X, Y))
 
-    debug = False
-
-    if debug:
-        fig = plt.figure()
-        plt.plot(X, Y, "ob", markersize=5)
-        X_interp = np.linspace(X[0], X[-1], 100)
-        plt.plot(X_interp, [L(x, X, Y) for x in X_interp], 'oy', markersize=2)
-        plt.legend(["Table point", "Interpolation"])
-        plt.show()
+    # X_test = np.array([1.2, 2., 2.8, 0.5, 0.75, 3.4, 10])
+    #
+    # print("Netwon's polynomial")
+    # print_polynomial(X, Y)
+    # print("Table of divided differences")
+    # print_divided_diff_table(X, Y)
+    # print('Difference between function and interpolation polynomial')
+    # print_difference(X_test, X, Y)
+    #
+    # debug = False
+    #
+    # if debug:
+    #     fig = plt.figure()
+    #     plt.plot(X, Y, "ob", markersize=5)
+    #     X_interp = np.linspace(X[0], X[-1], 100)
+    #     plt.plot(X_interp, [L(x, X, Y) for x in X_interp], 'oy', markersize=2)
+    #     plt.legend(["Table point", "Interpolation"])
+    #     plt.show()
