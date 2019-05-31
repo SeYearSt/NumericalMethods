@@ -3,8 +3,8 @@ import numpy as np
 import texttable as tt
 
 
-def divided_diff(x: list, y: list) -> list:
-    n = len(y)
+def divided_diff(x: np.ndarray, y: np.ndarray) -> tuple:
+    n = y.shape[0]
 
     result = [[] for i in range(n)]
     result[0] = y
@@ -14,20 +14,25 @@ def divided_diff(x: list, y: list) -> list:
             divided_diff = (result[k][i]-result[k][i-1])/(x[i+k] - x[i-1])
             result[k+1].append(divided_diff)
 
-    return result
+    coefs = [diff[0] for diff in result]
+
+    return coefs, result
 
 
-def L(x: float, x_i: np.ndarray, y_i: np.ndarray) -> float:
-    result = y_i[0]
-    for i in range(1, y_i.shape[0]):
-        indexes = np.arange(i)
-        indexes_diff = np.append(indexes, indexes[-1]+1)
-        result += np.prod(x - x_i[indexes])*divided_diff(x_i[indexes_diff], y_i[indexes_diff])
+def L(x: float, x_i: list, f_diff: list) -> float:
+    x_i = np.insert(x_i, 0, x-1)
+    res = f_diff[-1]
+    res *= (x-x_i[-1])
+    for i in range(len(f_diff)-1, -1, -1):
+        res += f_diff[i]
+        res *= x-x_i[i]
 
-    return result
+    return res
 
 
-def print_divided_diff_table(x: np.ndarray, y: np.ndarray) -> None:
+def print_divided_diff_table(x: np.ndarray, y: np.ndarray, f_coefs: list) -> None:
+    f_coefs_copy = [[val for val in f_coef] for f_coef in f_coefs]
+
     tab = tt.Texttable()
 
     # ----------- set headers
@@ -38,14 +43,13 @@ def print_divided_diff_table(x: np.ndarray, y: np.ndarray) -> None:
 
     tab.header(headings)
 
-    values = [x, y]
+    values = [x]
 
     # --------- cal divided differences
 
-    for i in range(1, y.shape[0]):
-        divided_diff_s = np.array([divided_diff(x[j: j+i+1], y[j: j+i+1]) for j in range(y.shape[0] - i)])
-        divided_diff_s = np.hstack([divided_diff_s, [""]*(y.shape[0]-1-divided_diff_s.shape[0])])
-        values.append(divided_diff_s)
+    for i in range(len(f_coefs_copy)):
+        f_coefs_copy[i].extend([""]*(y.shape[0]-len(f_coefs_copy[i])))
+        values.append(f_coefs_copy[i])
 
     for row in zip(*values):
         tab.add_row(row)
@@ -58,14 +62,14 @@ def f(x: float) -> float:
     return np.cosh(x/2)/10
 
 
-def print_polynomial(X, Y) -> None:
+def print_polynomial(X, f_coefs) -> None:
     template = '(x-{:.3f})'
     polinomial = 'Ln(x) = {:.3f}+'
-    args = [L(X[0], X, Y)]
+    args = [f_coefs[0]]
     for i in range(1, X.shape[0]):
         polinomial += template*i + '{:.3f}+'
         args.extend(X[:i].tolist())
-        args.append(divided_diff(X[:i+1], Y[:i+1]))
+        args.append(f_coefs[i])
 
     polinomial = polinomial[:-1]
 
@@ -88,31 +92,33 @@ def print_difference(X_test, X, Y) -> None:
 
 if __name__ == '__main__':
 
-    # a, b = 0, 3
-    # n = 5
-    # X = np.linspace(a, b, n)
-    # Y = f(X)
+    a, b = 0, 3
+    n = 5
+    X = np.linspace(a, b, n)
+    Y = f(X)
 
-    X = [1, 2, 3]
-    Y = [2, 4, 10]
+    print(X)
+    print(Y)
 
-    print(divided_diff(X, Y))
+    f_coefs, divided_diffs = divided_diff(X, Y)
 
-    # X_test = np.array([1.2, 2., 2.8, 0.5, 0.75, 3.4, 10])
-    #
-    # print("Netwon's polynomial")
-    # print_polynomial(X, Y)
-    # print("Table of divided differences")
-    # print_divided_diff_table(X, Y)
-    # print('Difference between function and interpolation polynomial')
-    # print_difference(X_test, X, Y)
-    #
-    # debug = False
-    #
-    # if debug:
-    #     fig = plt.figure()
-    #     plt.plot(X, Y, "ob", markersize=5)
-    #     X_interp = np.linspace(X[0], X[-1], 100)
-    #     plt.plot(X_interp, [L(x, X, Y) for x in X_interp], 'oy', markersize=2)
-    #     plt.legend(["Table point", "Interpolation"])
-    #     plt.show()
+    # print(L(0, X, f_coefs))
+
+    X_test = np.array([1.2, 2., 2.8, 0.5, 0.75, 3.4, 10])
+
+    print("Netwon's polynomial")
+    print_polynomial(X, f_coefs)
+    print("Table of divided differences")
+    print_divided_diff_table(X, Y, divided_diffs)
+    print('Difference between function and interpolation polynomial')
+    print_difference(X_test, X, Y)
+
+    debug = True
+
+    if debug:
+        fig = plt.figure()
+        plt.plot(X, Y, "ob", markersize=5)
+        X_interp = np.linspace(X[0], X[-1], 100)
+        plt.plot(X_interp, [L(x, X, f_coefs) for x in X_interp], 'oy', markersize=2)
+        plt.legend(["Table point", "Interpolation"])
+        plt.show()
