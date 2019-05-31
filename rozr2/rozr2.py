@@ -76,14 +76,14 @@ def print_polynomial(X, f_coefs) -> None:
     print(polinomial.format(*args))
 
 
-def print_difference(X_test, X, Y) -> None:
-    L_x = np.array([L(x, X, Y) for x in X_test])
-    difference = f(X_test) - L_x
+def print_difference(X_test, analytic_difference, X, Y, x_diff) -> None:
+    L_x = np.array([L(x, X, x_diff) for x in X_test])
+    difference = abs(f(X_test) - L_x)
 
     tab = tt.Texttable()
-    headings = ['x', 'f(x)', 'L(x)', 'R(x)']
+    headings = ['x', 'f(x)', 'L(x)', 'R(x)', 'analytic R(x)']
     tab.header(headings)
-    values = [X_test, f(X_test), L_x, difference]
+    values = [X_test, f(X_test), L_x, difference, analytic_difference]
     for row in zip(*values):
         tab.add_row(row)
     s = tab.draw()
@@ -104,14 +104,15 @@ if __name__ == '__main__':
 
     # print(L(0, X, f_coefs))
 
-    X_test = np.array([1.2, 2., 2.8, 0.5, 0.75, 3.4, 10])
+    X_test = np.array([0, 0.75, 1.5, 4])
+    analytic_difference = [0.001697767666, 0.001732812057, 0.004551445735, 0.3153717942]
 
     print("Netwon's polynomial")
     print_polynomial(X, f_coefs)
     print("Table of divided differences")
     print_divided_diff_table(X, Y, divided_diffs)
     print('Difference between function and interpolation polynomial')
-    print_difference(X_test, X, Y)
+    print_difference(X_test, analytic_difference, X, Y, f_coefs)
 
     debug = True
 
