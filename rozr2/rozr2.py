@@ -38,7 +38,7 @@ def print_divided_diff_table(x: np.ndarray, y: np.ndarray, f_coefs: list) -> Non
     # ----------- set headers
     headings = ['X', 'Y']
     for i in range(1, y.shape[0]):
-        head = 'f_x_i...f_x_i+{}'.format(i)
+        head = 'f(x_i;...;x_i+{})'.format(i)
         headings.append(head)
 
     tab.header(headings)
@@ -63,27 +63,35 @@ def f(x: float) -> float:
 
 
 def print_polynomial(X, f_coefs) -> None:
-    template = '(x-{:.3f})'
-    polinomial = 'Ln(x) = {:.3f}+'
-    args = [f_coefs[0]]
-    for i in range(1, X.shape[0]):
-        polinomial += template*i + '{:.3f}+'
-        args.extend(X[:i].tolist())
-        args.append(f_coefs[i])
 
-    polinomial = polinomial[:-1]
+  polinomial = 'Ln(x) = {:.3f}+'
 
-    print(polinomial.format(*args))
+  template = '(x-{:.3f})({:.3f}*'
+  template_end = '(x-{:.3f}){:.3f}'
+  args = []
+
+  for i in range(len(f_coefs)-2):
+    polinomial += template
+  
+  polinomial += template_end
+  polinomial += ")"*(len(f_coefs)-2)
+
+  for i in range(0, len(f_coefs)):
+    args.append(f_coefs[i])
+    args.append(X[i])
+
+  print(polinomial.format(*args))
 
 
 def print_difference(X_test, analytic_difference, X, Y, x_diff) -> None:
     L_x = np.array([L(x, X, x_diff) for x in X_test])
-    difference = abs(f(X_test) - L_x)
+    f_res = f(X_test)
+    difference = abs(f_res - L_x)
 
     tab = tt.Texttable()
-    headings = ['x', 'f(x)', 'L(x)', 'R(x)', 'analytic R(x)']
+    headings = ['x', 'f(x)', 'L(x)', 'R(x)', 'teoretical R(x)']
     tab.header(headings)
-    values = [X_test, f(X_test), L_x, difference, analytic_difference]
+    values = [X_test, f_res, L_x, difference, analytic_difference]
     for row in zip(*values):
         tab.add_row(row)
     s = tab.draw()
@@ -93,19 +101,14 @@ def print_difference(X_test, analytic_difference, X, Y, x_diff) -> None:
 if __name__ == '__main__':
 
     a, b = 0, 3
-    n = 5
-    X = np.linspace(a, b, n)
+    n = 4
+    X = np.linspace(a, b, n+1)
     Y = f(X)
-
-    print(X)
-    print(Y)
 
     f_coefs, divided_diffs = divided_diff(X, Y)
 
-    # print(L(0, X, f_coefs))
-
-    X_test = np.array([0, 0.75, 1.5, 4])
-    analytic_difference = [0.001697767666, 0.001732812057, 0.004551445735, 0.3153717942]
+    X_test = np.array([0.3, 0.5, 1.75, 0.75])
+    analytic_difference = [0.0047, 0.003,  0.0015, 0.]
 
     print("Netwon's polynomial")
     print_polynomial(X, f_coefs)
@@ -114,8 +117,7 @@ if __name__ == '__main__':
     print('Difference between function and interpolation polynomial')
     print_difference(X_test, analytic_difference, X, Y, f_coefs)
 
-    debug = True
-
+    debug = False
     if debug:
         fig = plt.figure()
         plt.plot(X, Y, "ob", markersize=5)
